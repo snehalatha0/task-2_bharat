@@ -1,0 +1,30 @@
+from surprise import Dataset, Reader
+from surprise.model_selection import cross_validate
+from surprise.prediction_algorithms import SVD
+
+# Load the MovieLens dataset
+data = Dataset.load_builtin('ml-100k')
+
+# Define a Reader object to parse the file
+reader = Reader(line_format='user item rating timestamp', sep='\t')
+
+# Load the data
+data = Dataset.load_from_file('path/to/ml-100k/u.data', reader=reader)
+
+# Use the SVD algorithm
+algo = SVD()
+
+# Run 5-fold cross-validation and print results
+cross_validate(algo, data, measures=['RMSE', 'MAE'], cv=5, verbose=True)
+
+# Train the algorithm on the whole dataset
+trainset = data.build_full_trainset()
+algo.fit(trainset)
+
+# Get a prediction for specific users and items
+user_id = str(196)  # Example user ID
+item_id = str(302)  # Example item ID
+
+# Predict rating for a given user and item
+prediction = algo.predict(user_id, item_id)
+print('Predicted rating:', prediction.est)
